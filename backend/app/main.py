@@ -1,16 +1,29 @@
 """
-Точка входа FastAPI. Пока минимум — чтобы убедиться, что всё поднимается.
+Точка входа FastAPI.
 """
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings  # noqa: F401
+from app.api.routes import auth
 
 app = FastAPI(
     title="Notes API",
     version="0.1.0",
     description="Учебный проект: заметки с папками.",
 )
+
+# CORS — чтобы фронтенд с localhost:5173 мог обращаться к API.
+# Без этого браузер заблокирует запросы с фронта.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth.router, prefix="/api")
 
 
 @app.get("/")
